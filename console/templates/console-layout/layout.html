@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block page_title %}{% endblock  %}</title>
+
+    <link href="/static/assets/css/tw.css" rel="stylesheet" type="text/css" />
+    <script src="/static/assets/js/tw.js"></script>
+
+    <link rel="stylesheet" href="/static/assets/css/swiper.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+
+
+    {% if token %}
+    <script>
+        let tokens = JSON.parse(localStorage.getItem('token'))
+        tokens.access = '{{token}}'
+        localStorage.setItem('token', JSON.stringify(tokens))
+    </script>
+    {% endif %}
+
+</head>
+<body class="m-0 p-0">
+
+    <div class="w-screen min-h-screen bg-slate-400 flex justify-center">
+        <div class="w-full max-w-[1600px] h-full min-h-screen  bg-slate-700 flex justify-start items-center">
+            <aside class="h-screen w-16 md:w-[20%] max-w-[250px] md:min-w-[200px] bg-slate-800 md:p-3 flex items-center flex-col">
+                <div class="logo h-[100px] w-[100px] flex justify-center items-center">
+                    {% comment %} <span class="text-slate-100">Jrs Studios</span> {% endcomment %}
+                </div>
+                <div class='w-full h-96 mt-3 p-2'>
+                    <a href="{% url "dashboard_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-8 w-8 md:h-[25px] md:w-[25px]" src="/static/assets/images/icons/dashboard.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Dashboard</div>
+                    </div></a>
+                    <a href="{% url "booking_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/booking.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Booking</div>
+                    </div></a>
+                    <a href="{% url "clients_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/customers.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Clients</div>
+                    </div></a>
+
+                    <a href="{% url "uploads_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/upload_white.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Uploads</div>
+                    </div></a>
+
+
+
+                    <a href="{% url "team_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/team_white.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Team</div>
+                    </div></a>
+
+                    {% comment %} <a href="{% url "pre_wedding_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/pre-wedding.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">pre-wedding</div>
+                    </div></a> {% endcomment %}
+
+
+                    {% comment %} <a href="{% url "wedding_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/wedding.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Wedding</div>
+                    </div></a> {% endcomment %}
+
+                    {% comment %} <a href="{% url "events_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/events.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Events</div>
+                    </div></a> {% endcomment %}
+
+                    {% comment %} <a href="{% url "reels_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/reels.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Reels</div>
+                    </div></a> {% endcomment %}
+
+
+                    <a href="{% url "payment_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/invoice.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Payment</div>
+                    </div></a>
+                    {% comment %} <a href="{% url "quotation_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/quotation.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Quotation</div>
+                    </div></a> {% endcomment %}
+
+                    <a href="{% url "administration_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/admin_white.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Administration</div>
+                    </div></a>
+
+                    <a id="logout" href="{% url "logout_be" %}"><div class="h-[45px] w-full my-2 flex justify-start items-center hover:bg-slate-900 hover:rounded-xl cursor-pointer">
+                        <div class="menu_icon md:mx-[10px] h-[40px] w-[40px] p-1 flex justify-center items-center">
+                            <img class="h-[25px] w-[25px]" src="/static/assets/images/icons/logout.png">
+                        </div>
+                        <div class="menu_item hidden md:block h-[40px] w-[calc(100%-50px)] p-1 flex justify-center-start items-center text-slate-100">Logout</div>
+                    </div></a>
+                </div>
+            </aside>
+
+            <script>
+                var logout = document.getElementById('logout');
+                logout.addEventListener('click',()=>{
+                    localStorage.removeItem('token')
+                })
+            </script>
+            
+            <div class="w-screen h-screen bg-sky-800">
+                <div class="h-full w-full overflow-y-scroll">
+                    <div class="bg-sky-700 h-full w-full md:pt-4 md:pl-4 md:pr-4">
+                        <div class="h-full w-full flex flex-col items-center">
+                            {% block main_body %}{% endblock  %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+
+    
+</body>
+</html>

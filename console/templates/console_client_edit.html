@@ -1,0 +1,1594 @@
+{% extends "console-layout/layout.html" %}
+
+{% block page_title %}Edit Client {{data.name}} {% endblock  %}
+
+{% block main_body %}
+
+{% comment %} {{token}} {% endcomment %}
+<script>
+  var popup_check=false;
+  var package_data;
+
+  let url = window.location.search
+  url = new URLSearchParams(url)
+  if (!url.get('sec')){
+    url.set('sec','client')
+    window.location.href = window.location.pathname+'?'+url.toString()
+  }
+
+</script>
+
+<script src="/static/assets/js/fetch.js"></script>
+<script src="/static/assets/js/poper.js"></script>
+<script src="/static/assets/js/popup_confirm.js"></script>
+<script src="/static/assets/js/number_with_commas.js"></script>
+
+
+<span class="text-2xl text-slate-100 p-2 self-start">Edit Client</span>
+{% comment %} <div class="w-full h-[50px] flex items-center justify-end"> {% endcomment %}
+
+<div class="w-[calc(100%-10px)] flex flex-col bg-slate-100 rounded-xl md:p-4 pb-0 mt-4">
+  <div class="m-1.5 overflow-x-auto">
+
+    <div class="border-b-2 border-gray-200 dark:border-gray-700">
+      <nav class="mb-0.5 flex space-x-3 md:space-x-6">
+
+        {% for r,v in request.GET.items %}
+          {% if r == 'sec' %}
+
+              {% with active='client_nav py-2 md:py-4 md:px-1 ml-2 flex-col inline-flex items-center md:flex-row gap-2 border-b-2 border-blue-500 text-xs md:text-sm font-medium whitespace-nowrap text-blue-600 focus:outline-none focus:text-blue-800' inactive='client_nav py-2 ml-2 md:py-4 md:px-1 flex-col inline-flex items-center md:flex-row gap-2 border-b-2 border-transparent text-xs md:text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600' %}
+
+                <a class="{% if v == 'client' %}{{active}}{% else %}{{inactive}}{% endif %}" data-status='active' name='client' href="#">
+                  <img class="h-[20px] w-[20px]" src="/static/assets/images/icons/customers_gray.png">
+                  Client
+                </a>
+                <a class="{% if v == 'segment' %}{{active}}{% else %}{{inactive}}{% endif %}" data-status='inactive' name='segment' href="#" aria-current="page">
+                  <img class="h-[20px] w-[20px]" src="/static/assets/images/icons/booking_gray.png">
+                  Segment
+                </a>
+                <a class="{% if v == 'booking' %}{{active}}{% else %}{{inactive}}{% endif %}" data-status='inactive' name='booking' href="#" aria-current="page">
+                  <img class="h-[20px] w-[20px]" src="/static/assets/images/icons/booking_gray.png">
+
+                  Booking
+                </a>
+                <a class="{% if v == 'quotation' %}{{active}}{% else %}{{inactive}}{% endif %}" data-status='inactive' name='quotation' href="#">
+                  <img class="h-[20px] w-[20px]" src="/static/assets/images/icons/quotation_gray.png">
+                  Quotation
+                </a>
+                <a class="{% if v == 'payment' %}{{active}}{% else %}{{inactive}}{% endif %}" data-status='inactive' name='payment' href="#">
+                  <img class="h-[20px] w-[20px]" src="/static/assets/images/icons/invoice_gray.png">
+                  Payment
+                </a>
+              {% endwith %}
+
+          {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+
+    {% comment %} <script>
+      let url = window.location.search
+      url = new URLSearchParams(url)
+      if (!url.get('sec')){
+        url.set('sec','client')
+        window.location.href = window.location.pathname+'?'+url.toString()
+      }
+    </script> {% endcomment %}
+
+
+    <div class="main_container py-4 md:p-1.5 min-w-full inline-block align-middle">
+          {%for k,v in request.GET.items%}
+            {% if k == 'sec' %}
+              {% if v == 'client' %}
+                {% comment %} <div class='text-sm'>Booking Status</div> {% endcomment %}
+                <div class="w-full h-auto overflow-hidden md:p-2">
+                  <div class="h-auto w-full flex justify-center items-center md:p-2 flex-col">
+                    <div class="relative w-16 h-16 md:w-24 md:h-24 rounded-full bg-[url('/static/{{data.profile}}')] bg-cover bg-center overflow-hidden border">
+                      <div class="profile absolute bottom-0 left-0 w-full h-full bg-slate-900 text-slate-100 text-xs flex justify-center items-center opacity-0 hover:opacity-80 duration-300 cursor-pointer">update picture</div>
+                    </div>
+                    <input class="update_profile_picture hidden" data-key="{{key}}" type="file">
+                    <span class="capitalize">{{data.name}}</span>
+                  </div>
+
+
+
+                  <div class='w-full h-auto flex justify-between flex-col my-4'>
+                    {% comment %} {% for key, value in data.items %} {% endcomment %}
+                      {% comment %} {% if key != 'id' and key != 'profile' %} {% endcomment %}
+                      <span class="w-full h-10 md:h-12 md:min-w-[350px] p-1 flex justify-start items-center flex-wrap"><span class="w-[96px] md:w-1/4 h-full flex items-center text-xs md:text-sm capitalize">Booking Status</span>
+                      
+                      <select class="booking_status rounded-xl w-[calc(100%-96px)] md:w-1/4 text-xs md:text-sm h-full px-2 capitalize">
+                        
+                        <option disabled selected value='{{booking.first.booking_status.id}}'>{{booking.first.booking_status.title}}</option>
+
+                        {% for b in booking_status_list %}
+                        <option value='{{b.id}}'>{{b.title}}</option>
+                        {% endfor %}
+                      </select>
+                      <span><button type="button" class="update_booking_status py-2 px-3 ml-2 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-teal-500 text-white hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Update Status</button>
+                        <a href="/console/clients#{{data.id}}"></span>
+                    </span>
+                      {% comment %} {% endif %} {% endcomment %}
+                    {% comment %} {% endfor %} {% endcomment %}
+                  </div>
+
+                  <div class='w-full h-auto flex justify-between flex-col my-4'>
+                    {% for key, value in data.items %}
+                      {% if key != 'id' and key != 'profile' and key != 'created at' and key != 'booking id' %}
+                      <span class="w-full h-10 md:h-12 md:min-w-[350px] p-1 flex justify-start items-center flex-wrap"><span class="w-[96px] md:w-1/4 h-full flex items-center text-xs md:text-sm capitalize">{{ key }}</span><input class="inp_data rounded-xl w-[calc(100%-96px)] md:w-3/4 text-xs md:text-sm h-full px-2" data-key="{{key}}" type="{% if 'date' in key %}date{% else %}text{% endif %}" value="{% if value is None %}{% else %}{{value}}{% endif %}"></span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+
+
+                  <div class="flex justify-center">
+                    <button type="button" class="save py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-teal-500 text-white hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Save</button>
+                    <a href="/console/clients#{{data.id}}"><button type="button" class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:bg-white/10 dark:hover:bg-white/20 dark:text-white dark:hover:text-white dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Cancle</button></a>
+                </div>
+
+
+                <script>
+
+                  const update_booking_status = document.querySelector('.update_booking_status')
+                  update_booking_status.addEventListener('click',async ()=>{
+                    const booking_status = document.querySelector('.booking_status');
+                    console.log('booking_status',booking_status.value)
+
+                    let url = '{% url "update_booking_status" id=data.id %}';
+                    let token = JSON.parse(localStorage.getItem('token')).access
+                    let a = await ftN(url, 'POST',{'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`}, JSON.stringify({'booking_status': booking_status.value}))
+                    if (a){
+                      //console.log('a',a)
+                      if (a.status === 200){
+                        poperFunction(a.status,a.message,true)
+                      } else {
+                        poperFunction(a.status,a.message,false)
+                      }
+                    }
+
+                  })
+
+
+                  const save = document.querySelector('.save');
+                  save.addEventListener('click', ()=>{
+                    const inp_data = document.querySelectorAll('.inp_data')
+                    let formData = new FormData()
+                    inp_data.forEach(e=>{
+                      //  result = formValidation()
+                      formData.append(e.getAttribute('data-key').replaceAll(' ', '_'), e.value.toLocaleLowerCase());
+                      const profile = document.querySelector('.update_profile_picture');
+                      formData.append('profile', profile.files[0])
+                    })
+                
+                      let token = localStorage.getItem('token')
+                      if (token){
+                          (async function rlUpl(){
+                              let a = await fetch('{% url "edit_client" id=data.id %}', {method: 'PUT', headers:{ 'Authorization': 'Bearer '+ JSON.parse(token).access}, body: formData})
+                              a = await a.json()
+                              if (a && a.status === 200){
+                                  // const popup = document.querySelector('.popup');
+                                  // popup.remove()
+                                  const dv = document.createElement('div');
+                                  dv.classList = 'submit_alert w-80 absolute left-[50%] translate-x-[-50%] top-4 overflow-hidden'
+                                  dv.innerHTML= `<div class="bg-teal-50 border-t-2 border-teal-500 rounded-lg p-4 dark:bg-teal-800/30" role="alert">
+                                      <div class="flex">
+                                        <div class="flex-shrink-0">
+                                          <span class="inline-flex justify-center items-center w-8 h-8 rounded-full border-4 border-teal-100 bg-teal-200 text-teal-800 dark:border-teal-900 dark:bg-teal-800 dark:text-teal-400">
+                                            <svg class="flex-shrink-0 w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                                          </span>
+                                        </div>
+                                        <div class="ms-3">
+                                          <h3 class="text-gray-800 font-semibold dark:text-white">
+                                              ${a.message}
+                                          </h3>
+                                        </div>
+                                      </div>
+                                      <div class="submit_alert_duration bg-green-800 w-[100%] h-[6px] absolute bottom-0 left-0 rounded-b-md"></div>
+                                    </div>
+                                    `
+                                    document.body.prepend(dv)
+                                    
+                                    const submit_alert = document.querySelector('.submit_alert');
+                                    // const submit_alert_duration = submit_alert.querySelector('.submit_alert_duration')
+                                    setTimeout(()=>{
+                                      // submit_alert_duration.style.width = Number((submit_alert_duration.style.width).replaceAll('%', '')) - 25+'%'
+                                      // submit_alert.remove()
+                                      window.location.reload()
+                
+                                    },1000)     
+                              }  else {
+                                const dv = document.createElement('div');
+                                dv.classList = 'submit_alert w-80 absolute left-[50%] translate-x-[-50%] top-4 overflow-hidden'
+                                dv.innerHTML= `<div class="bg-red-50 border-s-4 border-red-500 p-4 dark:bg-red-800/30" role="alert">
+                                  <div class="flex">
+                                    <div class="flex-shrink-0">
+                                      <!-- Icon -->
+                                      <span class="inline-flex justify-center items-center w-8 h-8 rounded-full border-4 border-red-100 bg-red-200 text-red-800 dark:border-red-900 dark:bg-red-800 dark:text-red-400">
+                                        <svg class="flex-shrink-0 w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                      </span>
+                                      <!-- End Icon -->
+                                    </div>
+                                    <div class="ms-3">
+                                      <h3 class="text-gray-800 font-semibold dark:text-white">
+                                        Error!
+                                      </h3>
+                                      <p class="text-sm text-gray-700 dark:text-gray-400">
+                                        ${e.message}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                                  </div>
+                                  `
+                                  document.body.prepend(dv)
+                              }
+                          }())
+                        }
+                  })
+                  const profile = document.querySelector('.profile');
+                  profile.addEventListener('click', ()=>{
+                    const update_profile_picture = document.querySelector('.update_profile_picture');
+                    update_profile_picture.click()
+                  })
+                </script>
+
+              {% elif v == 'segment' %}
+              
+                <div class='w-full h-auto overflow-hidden p-0 md:p-2'>
+
+                  <div class="flex justify-start my-2">
+                    <div class="text-sm p-2  w-24 md:w-[15%]">Segment</div>
+                    <div class="w-[85%]">
+                    <div id="segment_cont" class="relative w-auto h-full flex items-center px-2">
+                      <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-900 text-white">
+                        <option disabled selected {% if pre_selected.segment.id %}value="{{pre_selected.segment.id}}"{% endif %}>{% if pre_selected.segment.name %}{{pre_selected.segment.name}}{% else  %}Select Segment{% endif %}</option>
+                      </select>
+                    </div>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-start my-2">
+                    <div class="text-sm p-2 w-24 md:w-[15%]">
+                      Package
+                    </div>
+                    <div class="w-[85%]">
+                    <div id="package_cont" class="relative w-auto h-full flex items-center px-2">
+                      <select id='package' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-900 text-white">
+                        <option disabled selected {% if pre_selected.package.id %}value="{{pre_selected.package.id}}"{% endif %}>{% if pre_selected.package.name %}{{pre_selected.package.name}}{% else  %}Select Package{% endif %}</option>
+                        {% if package %}
+                          {% for p in package %}
+                            <option value="{{p.id}}">{{p.package}}</option>
+                          {% endfor %}
+                        {% endif %}
+                      </select>
+                    </div>
+
+                    </div>
+                  </div>
+
+                  <div class="flex justify-start my-2">
+                    <div class="text-sm p-2 w-24 md:w-[15%]">
+                      Price
+                    </div>
+                    <div class="w-[85%]">
+                      <div id="price_cont" class="relative w-auto h-full flex items-center px-2">
+                        <span id="price">{{pre_selected.package.price}}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-start my-2">
+                    <div class="text-sm p-2 w-24 md:w-[15%]">
+                      Service
+                    </div>
+                    <div class="w-[85%]">
+                      <div id="service_cont" class="relative w-auto h-full flex items-center px-2">
+                        <span id="service" class="w-full">
+                          <ul class="w-full flex flex-wrap service_list">
+                            {% if pre_selected.service %}
+                              {% for p in pre_selected.service %}
+                                <li class="w-[49%] flex items-center"><div class="flex items-center"><img class="mr-2 w-3 h-3 md:mr-4 md:w-4 md:h-4" src="/static/assets/images/icons/ok_blue.png"><span class="service_name text-sm">{{p.service_name}}</span></div></li>
+                              {% endfor %}
+                            {% endif %}
+
+                          </ul>
+                        </span>
+                      
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-center py-2 my-4">
+                    <button type="button" class="segment_submit py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-teal-500 text-white hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Save</button>
+                  </div>
+
+                  <script>
+                  const segment_list = [
+                  {% for s in segment %}
+                    {'id': {{s.id}}, 'segment': '{{s.segment}}'.replaceAll('_',' ')},
+                  {% endfor %}
+                  ];
+                  const segment = document.querySelector('#segment');
+                  const package = document.querySelector('#package');
+                  const price = document.querySelector('#price');
+                  const service_list = document.querySelector('.service_list');
+
+                  segment_list.forEach(e=>{
+                    const opt = document.createElement('option');
+                    opt.value = e.id
+                    opt.innerText = e.segment
+                    segment.append(opt)
+                  })
+
+                  segment.addEventListener('change',async ()=>{
+                    package.innerHTML = '<option selected disabled>Select Package</option>';
+                    price.innerText = 0;
+                    service_list.innerText = '';
+                    // console.log(segment.value)
+                    let url = '{% url "get_all_package_admin" id=0 %}';
+                    url = url.replaceAll(0, segment.value);
+                    let token = JSON.parse(localStorage.getItem('token')).access
+                    let a = await ftN(url,'GET',{'Content-Type': 'application/json','Authorization': `Bearer ${token}`},'')
+                    if(a.status === 200){
+                      a.data.forEach(e=>{
+                        const opt = document.createElement('option');
+                        opt.value = e.id
+                        opt.innerText = e.package
+                        package.append(opt)
+                      })
+                      package.addEventListener('change',()=>{
+                      service_list.innerText = '';
+
+                        a.data.forEach(e=>{
+                          if (Number(package.value) === Number(e.id)){
+                            price.innerText=e.price
+                            const service_list_DOM = document.querySelector('.service_list')
+                            console.log(service_list_DOM)
+                            e.service.forEach(e=>{
+                              const li = document.createElement('li');
+                              li.classList='w-[49%] flex items-center'
+                              li.innerHTML= `<div class="flex items-center"><img class="md-2 w-3 h-3 md:mr-4 md:w-4 md:h-4" src="/static/assets/images/icons/ok_blue.png"><span class="service_name text-sm">${e}</span></div>`
+                              service_list_DOM.append(li)
+                            })
+                          }
+                        })
+                      })
+                    } else {
+                      poperFunction(a.status, a.message, false)
+                    }
+                  })
+
+                  const segment_submit = document.querySelector('.segment_submit');
+                  segment_submit.addEventListener('click',async ()=>{
+                    const package = document.getElementById('package')
+
+                    let url = '{% url "submit_package" id=client_data.id %}'
+                    let token = JSON.parse(localStorage.getItem('token')).access
+
+                    let a = await ftN(url,'PUT',{'Content-Type':'application/json','Authorization':`Bearer ${token}`},JSON.stringify({'package': Number(package.value)}));
+                    if (a.status === 200){
+                      poperFunction(a.status,a.message,true)
+                    } else {
+                      poperFunction(a.status,a.message,false)
+                    }
+                  })
+
+                  </script>
+
+                </div>  
+
+              {% elif v == 'booking' %}
+
+                <div class='w-full h-auto overflow-hidden py-2'>
+                  <div class="w-full flex justify-end">
+                    {% comment %} <button type="button" class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
+                    Add Date
+                    </button> {% endcomment %}
+                  </div>
+                
+                  {% if not booking_data == '-' %}
+
+                  <div class="flex justify-start">
+                    <div class="text-xs md:text-sm p-2 md:font-bold w-36 md:w-[15%]">
+                      Selected Package
+                    </div>
+                    <div class="w-[85%]">
+                      <div id="selected_package_cont" class="relative w-auto h-full flex items-center px-2">
+                        <span id="selected_package" class="text-xs md:text-sm capitalize">{{pre_selected.package.name}}</span>
+                        {% comment %} <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-700 text-white"> {% endcomment %}
+                          {% comment %} <option disabled selected>Segment</option> {% endcomment %}
+                          {% comment %} <option value="{{s.id}}">{{s.segment}}</option> {% endcomment %}
+                        {% comment %} </select> {% endcomment %}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="w-full h-auto flex items-between flex-col px-2 my-2 bg-slate-200 p-2 rounded-xl">
+                    <div class="h-8 w-full  flex justify-start items-center ">
+                      <div id="years_cont" class="relative w-auto h-full flex justify-center items-center p-2">
+                        <select id='year' class="w-20 md:w-40 h-8 px-2 rounded-xl text-xs"></select>
+                        {% comment %} <span id="year" class="text-xl"></span>
+                        <div id="year_back_btn" class="h-8 w-8 cursor-pointer select-none bg-slate-500 absolute flex justify-center items-center left-0"><img class="w-2/4 h-2/4 duration-200" src="/static/assets/images/icons/back.png"></div>
+                        <div id="year_forward_btn" class="h-8 w-8 cursor-pointer select-none bg-slate-500 absolute flex justify-center items-center right-0"><img class="w-2/4 h-2/4 duration-200" src="/static/assets/images/icons/forward.png"></div> {% endcomment %}
+                      </div>
+
+                      <div id="months_cont" class="relative w-auto h-full flex justify-center items-center p-2">
+                        <select id='month' class="w-24 h-8 px-2 rounded-xl capitalize text-xs"></select>
+                        {% comment %} <span id="month" class="text-xl capitalize" data-month-index=0></span>
+                        <div id="month_back_btn" data-month-index=0 class="h-8 w-8 cursor-pointer select-none bg-slate-500 absolute flex justify-center items-center left-0"><img class="w-2/4 h-2/4 duration-200" src="/static/assets/images/icons/back.png"></div>
+                        <div id="month_forward_btn" class="h-8 w-8 cursor-pointer select-none bg-slate-500 absolute flex justify-center items-center right-0"><img class="w-2/4 h-2/4 duration-200" src="/static/assets/images/icons/forward.png"></div> {% endcomment %}
+                      </div>
+
+                    </div>
+                    <div class="h-auto w-full pt-2 mt-6">
+                      <div class="h-full w-full grid grid-cols-7 gap-4">
+                        <div class="text-slate-900 text-xs flex justify-center items-center h-[10px] w-[30px] md:h-12 md:w-20 select-none rounded-xl">Sun</div>
+                        <div class="text-slate-900 text-xs flex justify-center items-center h-[10px] w-[30px] md:h-12 md:w-20 select-none rounded-xl">Mon</div>
+                        <div class="text-slate-900 text-xs flex justify-center items-center h-[10px] w-[30px] md:h-12 md:w-20 select-none rounded-xl">Tue</div>
+                        <div class="text-slate-900 text-xs flex justify-center items-center h-[10px] w-[30px] md:h-12 md:w-20 select-none rounded-xl">Wed</div>
+                        <div class="text-slate-900 text-xs flex justify-center items-center h-[10px] w-[30px] md:h-12 md:w-20 select-none rounded-xl">Thu</div>
+                        <div class="text-slate-900 text-xs flex justify-center items-center h-[10px] w-[30px] md:h-12 md:w-20 select-none rounded-xl">Fri</div>
+                        <div class="text-slate-900 text-xs flex justify-center items-center h-[10px] w-[30px] md:h-12 md:w-20 select-none rounded-xl">Sat</div>
+                      </div>
+                    </div>
+                    <div class="h-auto w-full py-2">
+                      <div class="h-full w-full grid grid-cols-7 gap-2">
+                        {% for i in "12345678901234567890123456789012345" %}
+                          <div class="date_days text-slate-100 flex justify-center items-center h-[30px] w-[30px] mx-1 md:h-12 md:w-20 bg-sky-700 border border-slate-300 select-none cursor-pointer rounded-xl hover:text-2xl duration-200 p-2"></div>
+                        {% endfor %}
+                      </div>
+                    </div>
+
+
+
+                    <script>
+
+                      BOOKED_DATE_RW = [{% for b in booking_data %}'{{b}}',{% endfor %}]
+                      BOOKED_DATE = []
+
+                      BOOKED_DATE_RW.forEach(e=>{
+                        const date = new Date(e)
+                        console.log(date)
+                        BOOKED_DATE.push({'date': date.getDate(), 'month': date.getMonth(), 'year': date.getFullYear()})
+                      })
+
+                      // console.log(BOOKED_DATE)
+
+
+                      const dateObj = new Date()
+                      const year = document.getElementById('year');
+                      const month = document.getElementById('month');
+                      const monthList = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+                      const dayList = ['sun','mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+                      
+                      let date_year = dateObj.getFullYear();
+                      let date_month = dateObj.getMonth();
+
+                      for(let i=0; i<5; i++){
+                        const opt = document.createElement('option')
+                        if (i==0){opt.setAttribute('selected', 'true')}
+                        opt.value = date_year+i
+                        opt.innerText = date_year+i
+                        year.append(opt)
+                      }
+
+                      for(let i=0; i<monthList.length; i++){
+                        const opt = document.createElement('option');
+                        if (i == date_month){opt.setAttribute('selected', 'true')}
+                        opt.setAttribute('data-month-index', i)
+                        opt.value = i
+                        opt.innerText = monthList[i]
+                        month.append(opt)
+                      }
+
+                      year.addEventListener('change', ()=>{
+                        monthStartDay()
+                        daysRendering()
+                        ClearBookingsHighlighter()
+                        blankDisabler()
+                        pastDateChecker()
+                        BookingsHighlighter()
+                      })
+
+                      month.addEventListener('change', ()=>{
+                        monthStartDay()
+                        daysRendering()
+                        ClearBookingsHighlighter()
+                        blankDisabler()
+                        pastDateChecker()
+                        BookingsHighlighter()
+                      })
+
+
+                      function monthStartDay(){
+                        const month = document.getElementById('month')
+                        const year = document.getElementById('year')
+                        let date = new Date(`01/${monthList[month.value]}/${year.value}`);
+                        const days_of_month = new Date(Number(year.value), Number(month.value)+1, 0)
+                  
+                        let start_date = 1;
+
+                        const date_days = document.querySelectorAll('.date_days');
+                        date_days.forEach(e=>{e.innerText=""; e.removeAttribute('data-status');e.removeAttribute('data-date'); e.removeEventListener('mouseenter', mouseEventActive), e.removeEventListener('mouseleave', mouseEventInactive), e.removeEventListener('click', mouseEventClick), 
+                        e.classList.add('border')
+                        e.classList.add('border-slate-300')
+                        e.classList.remove('bg-slate-200')
+                        e.classList.add('bg-sky-700')
+
+                        e.classList.remove('bg-slate-300')
+                        // e.classList.remove('bg-sky-700')
+                        e.removeAttribute ('data-status')
+                        e.removeEventListener('mouseenter', mouseEventActive)
+                        e.removeEventListener('mouseleave', mouseEventInactive)
+                        e.removeEventListener('click', mouseEventClick)
+
+                      })
+
+                        for(let i=date.getDay(); i<date_days.length; i++){
+                          if (start_date <= days_of_month.getDate()){
+                            date_days[i].innerText = `${start_date}`;
+                            date_days[i].setAttribute('data-status', 'active');
+                            date_days[i].setAttribute('data-date', start_date);
+                            start_date = start_date + 1;
+                          }
+                        }
+
+                        if (start_date <= days_of_month.getDate()){
+                          remainingDays = days_of_month.getDate() - (start_date-1)
+                          for(let i=0; i<remainingDays; i++){
+                            date_days[i].innerText = start_date;
+                            date_days[i].setAttribute('data-status', 'active');
+                            date_days[i].setAttribute('data-date', start_date);
+                            start_date = start_date + 1;
+                          }
+                        }
+
+                        // const date_days_n = document.querySelector('.date_days');
+                        // date_days_n.forEach(e=>{
+                        //   if (e.innerText=''){
+                        //     cons
+                        //   }
+                        // })
+
+                      } monthStartDay()
+
+
+                      function daysRendering(){
+                        const date_days = document.querySelectorAll('.date_days');
+                        date_days.forEach(e=>{
+                        if (e.getAttribute('data-status') == 'active'){
+                          e.addEventListener('mouseenter', mouseEventActive)
+                          e.addEventListener('mouseleave',mouseEventInactive)
+                          e.addEventListener('click', mouseEventClick)
+                            // 
+                            // const pre_wed_save_btn = document.querySelector('.pre_wedding_save');
+                            // pre_wed_save_btn.addEventListener('click',()=>{
+                              //   console.log(document.querySelector('.wedding_prewedding_switch').getAttribute('data-status'))
+                              // })
+                            }
+                          }) 
+                      } daysRendering()
+
+
+
+                      function mouseEventActive(e){
+                        // e.target.classList.remove('text-slate-900')
+                        e.target.classList.remove('bg-sky-700')
+                        // e.target.classList.add('text-slate-100')
+                        e.target.classList.add('bg-sky-600')
+                      }
+
+                      function mouseEventInactive(e){
+                        // e.target.classList.remove('text-slate-100')
+                        e.target.classList.remove('bg-sky-600')
+                        // e.target.classList.add('text-slate-900')
+                        e.target.classList.add('bg-sky-700')
+                      }
+
+                      function mouseEventClick(e){
+                        console.log('mouse click working')
+                        popup_check = true;
+                        const popup_rm = document.querySelector('.popup');
+                        if (popup_rm){
+                          popup_check = false;
+                          popup_rm.remove()
+                        }
+                        const year = document.getElementById('year')
+                        const month = document.getElementById('month')
+                        const popup = document.createElement('div');
+                        popup.classList = 'popup w-[300px] md:w-96 h-96 bg-white absolute left-2/4 top-2/4 translate-x-[-50%] translate-y-[-50%] z-50 shadow-2xl rounded-xl overflow-hidden';
+                        popup.innerHTML = `
+                          <div class="date_title select-none w-full h-[40px] bg-blue-500 text-slate-100 font-bold capitalize relative flex justify-center items-center" data-current-date = "${e.target.getAttribute('data-date')}-${monthList[month.value]}-${year.value}">${e.target.getAttribute('data-date')} ${monthList[month.value]} ${year.value}
+                            <img src="/static/assets/images/icons/close_button.png" class="close_btn cursor-pointer absolute top-[50%] translate-y-[-50%] right-[10px] h-[25px] w-[25px] hover:w-[27px] hover:h-[27px] duration-200">
+                          </div>
+                          <div class="w-full h-[calc(100%-40px)]">
+                            <div class="w-full h-full">
+                              <div class="event_selector_dv w-full flex justify-evenly items-center flex-col h-full px-6">
+                                <div class="wedding_service w-full h-full flex flex-col">
+                                  <div class="w-full h-[calc(100%-70px)]">
+                                    <div class="font-bold h-[50px] flex justify-center items-center">Additionals</div>
+                                    <div class="h-[calc(100%-50px)] overflow-hidden rounded-xl bg-slate-300 shadow-inner shadow-2xl ">
+                                      <div class="additional_services w-full flex justify-between items-start flex-wrap p-3 h-full overflow-y-scroll">
+
+                                      </div>
+                                    </div>
+                                  </div>      
+                                  <div class="action_btn_wrapper h-[70px] flex justify-center items-center">
+                                    <button type="button" class="h-[40px] save shadow-2xl py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-teal-500 text-white hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Save</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                        </div>`
+
+                        
+                        document.body.prepend(popup)
+
+                        const close_btn = document.querySelector('.close_btn');
+                        close_btn.addEventListener('click', ()=>{
+                          popup_check = false;
+                          const popup = document.querySelector('.popup');
+                          popup.remove()
+                        })
+
+                        document.addEventListener('keyup', (e)=>{
+                          if (e.key == 'Escape'){
+                            popup_check = false;
+                            const popup = document.querySelector('.popup');
+                            popup.remove()
+                          }
+                        })
+
+
+                        async function getServices(){
+                          csrf = JSON.parse(localStorage.getItem('token')).access
+                          try{
+                            let a = await fetch('{% url "get_additional_services"%}', {method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer '+csrf} })
+                            a = await a.json()
+                            if (a){
+                              const wedding_service_main = document.querySelector('.wedding_service .main_services')
+                              const wedding_service_additional = document.querySelector('.wedding_service .additional_services');
+                                a.data.additional_service.forEach(e=>{
+                                    const div = document.createElement('div')
+                                    div.classList = 'w-full flex justify-between my-1';
+                                    div.innerHTML = `
+                                      <span>
+                                        <input class="wedding_additional_service h-4 w-4 m-2" id="${e.service_name.replaceAll(' ','_')}" data-service-id="${e.id}" data-service-name="${e.service_name}" type="checkbox"><label for="${e.service_name.replaceAll(' ','_')}" class="select-none text-xs capitalize">${e.service_name}</label>
+                                      </span>
+                                      <span class="flex justify-center items-center"><input class="wedding_additional_service_quantity ml-3 w-12 h-7 rounded-md outline-1 border p-1" id="${e.service_name.replaceAll(' ','_')}_count" type="number" value='1'>
+                                      </span>`;
+                                    wedding_service_additional.append(div)
+                                })
+                              BookedServiceCheck()
+                            }
+                            }
+                            catch(e){
+                              console.log(e)
+                            } 
+                        } getServices()
+
+                        const DATE_TARGET = e.target;
+                        async function BookedServiceCheck(){
+                          const BOOKED_DATE_CHECK_YEAR = year.value
+                          const BOOKED_DATE_CHECK_MONTH = month.value
+                          const BOOKED_DATE_CHECK_DATE = e.target.getAttribute('data-date')
+                          let token = JSON.parse(localStorage.getItem('token')).access
+                          let url = '{% url "get_booked_services" id=client_data.id %}'
+                          let a = await fetch( url, {method: 'GET', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer '+token} })
+                          a = await a.json()
+                          if (a.status == 200){
+                            a.data.forEach(e=>{
+                                if ((Number(e.shoot_date.year) === Number(BOOKED_DATE_CHECK_YEAR)) &&  (Number(e.shoot_date.month)=== Number(BOOKED_DATE_CHECK_MONTH) + 1) && (Number(e.shoot_date.date) === Number(BOOKED_DATE_CHECK_DATE))){
+                                  const wedding_main_service = document.querySelector('.wedding_service .main_services');
+                                  const wedding_additional_service = document.querySelector('.wedding_service .additional_services');
+                                  const pre_wedding_main_service = document.querySelector('.pre_wedding_service .main_services');
+                                  const pre_wedding_additional_service = document.querySelector('.pre_wedding_service .additional_services');
+                                  e.booked_additional_service.forEach(e=>{
+                                      const booked_services_ch = wedding_additional_service.querySelector(`#${e.additional_service.replaceAll(' ', '_')}`)
+                                      booked_services_ch.setAttribute('checked', 'true')
+                                      const booked_services_count_ch = wedding_additional_service.querySelector(`#${e.additional_service.replaceAll(' ', '_')}_count`)
+                                      booked_services_count_ch.value = e.count
+                                  })
+                                  const action_btn_wrapper = document.querySelector('.action_btn_wrapper');
+                                  const btn = document.createElement('button');
+                                  btn.innerText="Cancle Booking"
+                                  btn.classList="cancle_booking py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                                  action_btn_wrapper.append(btn)
+                                  btn.addEventListener('click', ()=>{
+                                    let date = `${year.value}-${Number(month.value)+1}-${DATE_TARGET.getAttribute('data-date')}`;
+                                    popupConfirmFun(date,'Cancel Booking', 'Are you sure you want to cancel this booking?', null)
+                                    const confirm = document.querySelector('.confirm')
+                                    confirm.addEventListener('click', async (e)=>{
+                                      const date = e.target.getAttribute('data-id')
+                                      let token = JSON.parse(localStorage.getItem('token')).access
+                                        
+                                      let a = await ftN('{% url "cancle_booking" %}', "DELETE", {'Content-Type': 'application/json', "Authorization": 'Bearer '+token}, JSON.stringify({'shoot_date': date}))
+                                      if (a.status == 200){
+                                        poperFunction(a.status, a.message, true)
+                                      } else {
+                                        poperFunction(a.status, a.message, false)
+                                      }
+                                    })
+                                  })
+                                }                            
+                            })
+                          }
+                        }
+
+                        
+                        const save = document.querySelector('.save');
+                        save.addEventListener('click',async ()=>{
+                          // const segment = document.querySelector('.wedding_prewedding_switch').getAttribute('data-status')
+                          let date = `${year.value}-${Number(month.value)+1}-${e.target.getAttribute('data-date')}`
+                          async function submitBooking(d){
+                             let token = JSON.parse(localStorage.getItem('token')).access
+                             try{
+                               let a = await fetch('{% url "add_booking" id=client_data.id %}', {method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer '+token}, body: d})
+                               a = await a.json()
+                               if (a){
+                                 poperFunction(a.status, a.message, true)
+                               }
+                               return a
+                             } catch(e){console.log(e)}
+                           }
+
+                            const wedding_additional_service = document.querySelectorAll('.wedding_additional_service');
+                            const wedding_additional_service_quantity = document.querySelectorAll('.wedding_additional_service_quantity');
+                            let additional_service_data = []
+                            wedding_additional_service.forEach((e,i)=>{
+                              if (e.checked){
+                                additional_service_data.push({ 'id' : Number(e.getAttribute('data-service-id')), 'count': Number(wedding_additional_service_quantity[i].value) })
+                              }
+                            })
+                            const data = await submitBooking(JSON.stringify({'additional_service': additional_service_data,'shoot_date': date}))
+                        })
+                      }
+                      
+
+
+                      function BookingsHighlighter(){
+                        const month = document.getElementById('month')
+                        const year = document.getElementById('year')
+                        const date_days = document.querySelectorAll('.date_days')
+                        BOOKED_DATE.forEach(e=>{
+                          if (Number(e.year) === Number(year.value)){
+                            if (Number(e.month) === Number(month.value)){
+                              date_days.forEach(f=>{
+                                if (e.date == f.getAttribute('data-date')){
+                                  f.removeEventListener('mouseenter',mouseEventActive)
+                                  f.classList.remove('bg-sky-700')
+                                  f.classList.add('bg-amber-600')
+                                }
+                              })
+                            }
+                          }
+                        })
+                      } BookingsHighlighter()
+
+                      function ClearBookingsHighlighter(){
+                        const date_days = document.querySelectorAll('.date_days')
+                        date_days.forEach(f=>{
+                            f.removeEventListener('mouseenter',mouseEventActive)
+                            f.removeEventListener('mouseleave',mouseEventInactive)
+                            f.classList.remove('bg-amber-600')
+                            f.classList.add('bg-sky-700')
+                        })
+                      }
+
+                      function blankDisabler(){
+                        const date_days = document.querySelectorAll('.date_days')
+                        date_days.forEach(f=>{
+                          if (!f.getAttribute('data-status')){
+                            // f.removeEventListener('mouseenter',mouseEventActive)
+                            // f.removeEventListener('mouseleave',mouseEventInactive)
+                            f.classList.remove('border')
+                            f.classList.remove('border-slate-300')
+                            f.classList.remove('bg-sky-700')
+                            f.classList.add('bg-slate-200')
+                          }
+                        })
+                      } blankDisabler()
+
+
+                      function pastDateChecker(){
+                        const date_days = document.querySelectorAll('.date_days')
+                        console.log(month.value)
+                        console.log(year.value)
+                        date_days.forEach(e=>{
+                          const newDate = new Date(`${Number(year.value)}-${Number(month.value)+1}-${e.getAttribute('data-date')}`)
+                          if(newDate - new Date() <= 0 && e.getAttribute('data-status') === 'active'){
+                          e.classList.remove('bg-sky-700') 
+                          e.classList.add('bg-slate-300') 
+                          e.removeAttribute ('data-status')
+                          e.removeEventListener('mouseenter', mouseEventActive)
+                          e.removeEventListener('mouseleave', mouseEventInactive)
+                          e.removeEventListener('click', mouseEventClick)
+                          }
+                        })
+                      } pastDateChecker()
+
+
+
+
+                    </script>
+                    </div>
+                  </div>
+
+                  {% else %}
+
+                  <div class="text-center mt-3">Please select segment to proceed with booking</div>
+                  
+                  {% endif %}
+                  
+                </div>
+
+              {% elif v == 'quotation' %}
+                  {% load poll_extras %}
+                  <div class="w-full h-auto overflow-hidden p-2">
+                    {% if not data == '-' %}
+
+
+                    <div class='w-full h-auto flex justify-between flex-col'>
+                      <div class="my-2 border-b">
+                      <span class="p-1 text-sm font-medium">Package Info</span>
+                      <div class="flex justify-start md:min-w-[350px] my-2">
+                        <div class="md:w-1/4 p-1 w-36 text-xs md:text-sm">
+                          Package
+                        </div>
+                        <div class="md:w-3/4">
+                          <div id="selected_package_cont" class="relative w-auto h-full flex items-center">
+                            <span id="selected_package" class="text-xs md:text-sm capitalize">{{data.first.package}}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="border-b">
+                      <span class="p-1 text-sm font-medium">Pricing Info</span>
+                      <div class="my-2">
+                        <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                          <div class="md:w-1/4 p-1 w-36">
+                            Package Price
+                          </div>
+                          <div class="md:w-3/4">
+                            <div id="selected_package_price_cont" class="relative w-auto h-full flex items-center">
+                              <span id="selected_package_price" class="capitalize w-10 text-end md:w-14"></span>
+                              {% comment %} <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-700 text-white"> {% endcomment %}
+                                {% comment %} <option disabled selected>Segment</option> {% endcomment %}
+                                {% comment %} <option value="{{s.id}}">{{s.segment}}</option> {% endcomment %}
+                              {% comment %} </select> {% endcomment %}
+                            </div>
+                            <script>
+                              const package_price =  Number({{data.first.package.price}});
+                              const selected_package_price = document.getElementById('selected_package_price');
+                              selected_package_price.innerText = numberWithCommas(package_price);
+                              console.log(numberWithCommas(package_price))
+                            </script>
+                          </div>
+                        </div>
+                        
+                        
+                        <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                          <div class="md:w-1/4 p-1 w-36 ">
+                            Additionals
+                          </div>
+                          <div class="md:w-3/4">
+                            <div id="selected_additionals_price_cont" class="relative w-auto h-full flex items-center">
+                              <span id="selected_additionals_price" class=" capitalize w-10 text-end md:w-14"></span>
+                              {% comment %} <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-700 text-white"> {% endcomment %}
+                                {% comment %} <option disabled selected>Segment</option> {% endcomment %}
+                                {% comment %} <option value="{{s.id}}">{{s.segment}}</option> {% endcomment %}
+                              {% comment %} </select> {% endcomment %}
+                            </div>
+                            <script>
+                              const additional_price = [
+                                {% for d in data.first.shoot_date.all %}
+                                  {% for e in d.additional_service.all %}
+                                    Number({{ e.additional_service.price|multiply:e.count }}),
+                                  {% endfor %}
+                                {% endfor %}
+                              ];
+                              const selected_additionals_price = document.getElementById('selected_additionals_price');
+                              selected_additionals_price.innerText = numberWithCommas(additional_price.reduce((a, b) => a + b));
+                            </script>
+                          </div>
+                        </div>
+
+
+                        <div class="flex justify-start md:min-w-[300px] text-xs md:text-sm">
+                          <div class="md:w-1/4 p-1 w-36">Discount</div>
+                          <div class="md:w-2/4">
+                            <div id="selected_package_price_cont" class="relative w-auto h-full flex items-center">
+                                <input class="inp_data total_discount rounded-xl h-8 px-2 w-20" data-key="total price" type="number" value="{{data.first.discount}}">
+                            </div>
+                          </div>
+                        </div>
+                          
+                        
+                        <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                          <div class="md:w-1/4 p-1 font-medium w-36">
+                            Total Price
+                          </div>
+                          <div class="md:w-3/4">
+                            <div id="total_price_fin_cont" class="relative w-auto h-full flex items-center">
+                              <span id="total_price_fin" class="capitalize font-medium	 w-10 text-end md:w-14"></span>
+                              {% comment %} <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-700 text-white"> {% endcomment %}
+                                {% comment %} <option disabled selected>Segment</option> {% endcomment %}
+                                {% comment %} <option value="{{s.id}}">{{s.segment}}</option> {% endcomment %}
+                              {% comment %} </select> {% endcomment %}
+                            </div>                                               
+                            <script>
+                              const total_price = [
+                                {% for d in data.first.shoot_date.all %}
+                                  {% for e in d.additional_service.all %}
+                                    Number({{ e.additional_service.price|multiply:e.count }}),
+                                  {% endfor %}
+                                {% endfor %}
+                              ];
+                              const total_price_fin = document.getElementById('total_price_fin');
+                              const total_discount = document.querySelector('.total_discount');
+                              console.log('total_discount',)
+                              total_price_fin.innerText = numberWithCommas(Number({{data.first.package.price}})+(total_price.reduce((a, b) => a + b)) - Number(total_discount.value) );
+                              {% comment %} const total_discount = document.querySelector('.total_discount') {% endcomment %}
+                              {% comment %} total_discount.value = a.data.discount {% endcomment %}
+  
+                              const payment = document.querySelector('.payment')
+                              total_discount.addEventListener('input',()=>{
+                                console.log(total_price.reduce((a, b) => a + b))
+  
+                                total_price_fin.innerText = numberWithCommas( (Number((total_price.reduce((a, b) => a + b)) + Number({{data.first.package.price}}) )  - Number(total_discount.value)))
+                                // remaining_payment.innerText = numberWithCommas(Number(a.data.remaining_payment) - (Number(total_discount.value) + Number(payment.value)))
+                              })
+                            </script>
+                          </div>
+                        </div>                        
+                      </div>
+                    </div>
+
+                      <span class="w-full h-auto md:min-w-[350px] p-1 my-2 pt-3s md:flex justify-start items-start flex-wrap border-b">
+
+                        <span class="md:w-1/4 h-full flex items-center capitalize text-sm font-medium">Additionals</span>
+                        {% comment %} <span class="md:w-1/4 h-full flex items-center capitalize text-sm font-bold"></span> {% endcomment %}
+                        <ul class="service_table_list w-3/4 flex justify-center items-start flex-col">
+
+
+                        {% for d in data.first.shoot_date.all %}
+                          
+                            <li class="capitalize flex flex-col my-4">
+                              <span class="font-medium pl-3 table_heading md:text-sm text-xs">{{d.date}}</span>
+                                  <div class="flex flex-col">
+                                    <div class="-m-1.5 overflow-x-auto">
+                                      <div class=" md:p-1.5 min-w-full inline-block align-middle">
+                                        <div class="overflow-hidden table_wrapper">
+                                          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 overflow-x-scroll mt-3 border">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col" class="px-6 py-2 text-start text-xs font-medium text-gray-500 capitalize">Additionals</th>
+                                                <th scope="col" class="px-6 py-2 text-start text-xs font-medium text-gray-500 capitalize">Price</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {% for e in d.additional_service.all %}
+                                              <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-slate-900 dark:even:bg-slate-800">
+                                                  <td class="px-6 py-3 whitespace-nowrap text-xs md:text-sm font-medium text-gray-800 dark:text-gray-200">{{e.count}} - {{e.additional_service}}</td>
+                                                  {% comment %} {% with total_price=e.additional_service.price|floatformat:2 %} {% endcomment %}
+                                                  <td class="px-6 py-3 whitespace-nowrap text-xs md:text-sm text-gray-800 dark:text-gray-200">{{ e.additional_service.price|multiply:e.count }}</td>
+                                                  {% comment %} {% endwith %} {% endcomment %}
+                                              </tr>
+                                              {% endfor %}
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% comment %} <input class="inp_data rounded-xl px-2" data-key="total price" id="" type="checkbox" value=""><label for=""> {% endcomment %}
+                            </li>
+
+                          {% endfor %}
+                        </ul>
+                      </span>
+
+
+                    <div class="flex justify-start md:min-w-[350px] my-4">
+                      <div class="md:w-1/4 text-sm p-1 w-36">
+                        Actions
+                      </div>
+                      <div class="md:w-3/4">
+                        <div id="selected_package_cont" class="relative w-auto h-full flex items-center">
+                          <span id="selected_package" class="text-xs md:text-sm capitalize">
+                            
+
+                            <span class="w-28 md:w-36 py-2 md:py-3 px-2 md:px-4 my-1 inline-flex items-center justify-center gap-x-2 text-xs md:text-sm font-semibold rounded-lg border border-transparent bg-teal-500 text-white hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 capitalize">
+                              <button type="button" class="save_discount_pdf">Save</button>
+                              <span class="save_discount_loader hidden loading loading-ring heading loading-sm"></span>
+                            </span>
+
+                            
+                            <span class="w-28 md:w-36 py-2 md:py-3 px-2 md:px-4 my-1 inline-flex items-center justify-center gap-x-2 text-xs md:text-sm font-semibold rounded-lg border border-transparent bg-teal-500 text-white hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 capitalize">
+                              <button type="button" class="email_pdf">Email</button>
+                              <span class="email_pdf_loader hidden loading loading-ring heading loading-sm"></span>
+                            </span>
+
+
+                            <span class="w-28 md:w-36 py-2 md:py-3 px-2 md:px-4 my-1 inline-flex items-center justify-center gap-x-2 text-xs md:text-sm font-semibold rounded-lg border border-transparent bg-teal-500 text-white hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 capitalize">
+                              <button type="button" class="download_pdf">Download</button>
+                              <span class="download_pdf_loader hidden loading loading-ring heading loading-sm"></span>
+                            </span>
+
+
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <script src="/static/assets/js/fetch.js"></script>
+
+                    <script>
+
+                      async function generate_quotation(e){
+
+                        // let deliverables_inp = document.querySelectorAll('.deliverables_inp');
+                        // let terms_conditions_inp = document.querySelectorAll('.terms_conditions_inp');
+
+                        // deliverables_inp = deliverables_inp.forEach(e=>{
+                        //   if (e.checked) {
+                        //     console.log(e.getAttribute('data-deliverables-id'))
+                        //   }
+                        // })
+
+                        // deliverables_inp = Array.from(deliverables_inp).filter(e=>e.checked).map(input=>input.getAttribute('data-deliverables-id'))
+                        // terms_conditions_inp = Array.from(terms_conditions_inp).filter(e=>e.checked).map(input=>input.getAttribute('data-terms-conditions-id'))
+
+                        let token = JSON.parse(localStorage.getItem('token')).access
+                        let a = await fetch('{% url "generate_quotation" id=client_data.id %}',{"method": 'POST', 'headers': {'Content-Type': 'application/json', 'Authorization': 'Bearer '+token} , "body": JSON.stringify({'discount':Number(total_discount.value)  }) } )
+  
+                        if (a.status === 200){
+
+                          const download_pdf = document.querySelector('.download_pdf');
+                          download_pdf.classList.remove('hidden')
+                          const download_pdf_loader = document.querySelector('.download_pdf_loader');
+                          download_pdf_loader.classList.add('hidden')
+
+                          poperFunction(a.status, 'quotation generated', false)
+                          a = await a.blob()
+                          const bloburl = URL.createObjectURL(a);
+                          const link = document.createElement('a');
+                          link.href = bloburl;
+                          link.download = 'quotation.pdf';
+                          document.body.appendChild(link);
+                          link.click();
+                          link.remove();
+                          URL.revokeObjectURL(bloburl);
+                          
+                          e.target.removeEventListener('click', generate_quotation)
+                          // e.target.innerText = 'generated'
+  
+                        } else {
+                          poperFunction(a.status, a.message, false)
+                        }
+                      }
+
+
+                      async function email_quotation(e){
+                        let token = JSON.parse(localStorage.getItem('token')).access
+                        url = '{% url "email_quotation" id=client_data.id discount=000 %}'.replaceAll(000,total_discount.value);
+                        let a = await ftN( url ,'GET', {'Content-Type': 'application/json', 'Authorization': 'Bearer '+token},'' )
+  
+                        if (a.status === 200){
+
+                          const email_pdf = document.querySelector('.email_pdf');
+                          email_pdf.classList.remove('hidden')
+
+                          const email_pdf_loader = document.querySelector('.email_pdf_loader');
+                          email_pdf_loader.classList.add('hidden')
+
+                          console.log(a.data)
+                          poperFunction(a.status, a.message, false)
+                        } else {
+                          poperFunction(a.status, a.message, false)
+                        }
+                      }
+
+                      async function saveQuotation(e){
+
+                        let token = JSON.parse(localStorage.getItem('token')).access
+                        let a = await fetch('{% url "save_quotation" id=client_data.id %}',{"method": 'POST', 'headers': {'Content-Type': 'application/json', 'Authorization': 'Bearer '+token} , "body": JSON.stringify({'discount':Number(total_discount.value)  }) } )
+  
+                        if (a.status === 200){
+
+                          const save_discount_pdf = document.querySelector('.save_discount_pdf');
+                          save_discount_pdf.classList.remove('hidden')
+                          const save_discount_loader = document.querySelector('.save_discount_loader');
+                          save_discount_loader.classList.add('hidden')
+
+                          // poperFunction(a.status, 'quotation saved', false)
+                          // a = await a.blob()
+                          // const bloburl = URL.createObjectURL(a);
+                          // const link = document.createElement('a');
+                          // link.href = bloburl;
+                          // link.download = 'quotation.pdf';
+                          // document.body.appendChild(link);
+                          // link.click();
+                          // link.remove();
+                          // URL.revokeObjectURL(bloburl);
+                          
+                          e.target.removeEventListener('click', saveQuotation)
+                          // e.target.innerText = 'generated'
+  
+                        } else {
+                          poperFunction(a.status, a.message, false)
+                        }
+
+                      }
+
+
+                      const download_pdf = document.querySelector('.download_pdf');
+                      download_pdf.addEventListener('click',(e)=>{
+                        download_pdf.classList.add('hidden')
+                        const download_pdf_loader = document.querySelector('.download_pdf_loader');
+                        download_pdf_loader.classList.remove('hidden')
+                        generate_quotation(e)
+                      })
+
+                      const email_pdf = document.querySelector('.email_pdf');
+                      email_pdf.addEventListener('click',(e)=>{
+                        email_pdf.classList.add('hidden')
+                        const email_pdf_loader = document.querySelector('.email_pdf_loader');
+                        email_pdf_loader.classList.remove('hidden')
+                        email_quotation(e)
+                      })
+
+                      const save_discount_pdf = document.querySelector('.save_discount_pdf');
+                      save_discount_pdf.addEventListener('click',(e)=>{
+                        save_discount_pdf.classList.add('hidden')
+                        const save_discount_loader = document.querySelector('.save_discount_loader');
+                        save_discount_loader.classList.remove('hidden')
+                        saveQuotation(e)
+                      })
+
+                    </script>
+
+                    {% else %}
+                      <div class="text-center mt-3">Please select segment to proceed with booking</div>
+                    {% endif %}
+
+                  </div>
+
+              {% elif v == 'payment' %}
+
+                  <div class="w-full h-auto overflow-hidden p-2">
+                    {% if not data == '-' %}
+                    
+                    <div class='w-full h-auto flex justify-between flex-col'>
+                      
+                      
+                      <div class="my-2 border-b">
+                        <span class="p-1 text-sm font-medium">Package Info</span>
+                        <div class="flex justify-start md:min-w-[350px] my-2">
+                          <div class="md:w-1/4 p-1 w-36 text-xs md:text-sm">Package</div>
+                          <div class="md:w-3/4">
+                            <div id="selected_package_cont" class="relative w-auto h-full flex items-center">
+                              <span id="selected_package" class="text-xs md:text-sm capitalize">{{data.first.package}}</span>
+                              {% comment %} <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-700 text-white"> {% endcomment %}
+                                {% comment %} <option disabled selected>Segment</option> {% endcomment %}
+                                {% comment %} <option value="{{s.id}}">{{s.segment}}</option> {% endcomment %}
+                              {% comment %} </select> {% endcomment %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="my-2 border-b">
+                        <span class="p-1 text-sm font-medium">Pricing Info</span>
+                        <div class="my-2">
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 w-36">Package Price</div>
+                            <div class="md:w-3/4">
+                              <div id="selected_package_price_cont" class="relative w-auto h-full flex items-center">
+                                <span id="selected_package_price" class="capitalize w-10 text-end md:w-14"></span>
+                              </div>
+                              <script>
+                                const package_price =  Number({{data.first.package.price}});
+                                const selected_package_price = document.getElementById('selected_package_price');
+                                selected_package_price.innerText = numberWithCommas(package_price);
+                                console.log(numberWithCommas(package_price))
+                              </script>
+                            </div>
+                          </div>
+                        
+                        
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 w-36 ">Additionals</div>
+                            <div class="md:w-3/4">
+                              <div id="selected_additionals_price_cont" class="relative w-auto h-full flex items-center">
+                                <span id="selected_additionals_price" class=" capitalize w-10 text-end md:w-14"></span>
+                                {% comment %} <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-700 text-white"> {% endcomment %}
+                                  {% comment %} <option disabled selected>Segment</option> {% endcomment %}
+                                  {% comment %} <option value="{{s.id}}">{{s.segment}}</option> {% endcomment %}
+                                {% comment %} </select> {% endcomment %}
+                              </div>
+                              <script>
+                                const additional_price = [
+                                  {% for d in data.first.shoot_date.all %}
+                                    {% for e in d.additional_service.all %}
+                                      Number({{ e.additional_service.price|multiply:e.count }}),
+                                    {% endfor %}
+                                  {% endfor %}
+                                ];
+                                const selected_additionals_price = document.getElementById('selected_additionals_price');
+                                selected_additionals_price.innerText = numberWithCommas(additional_price.reduce((a, b) => a + b));
+                              </script>
+                            </div>
+                          </div>
+
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 w-36 ">Discount</div>
+                            <div class="md:w-3/4">
+                              <div id="selected_discount_cont" class="relative w-auto h-full flex items-center">
+                                <span id="selected_discount" class=" capitalize w-10 text-end md:w-14">{{data.first.discount}}</span>
+                                {% comment %} <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-700 text-white"> {% endcomment %}
+                                  {% comment %} <option disabled selected>Segment</option> {% endcomment %}
+                                  {% comment %} <option value="{{s.id}}">{{s.segment}}</option> {% endcomment %}
+                                {% comment %} </select> {% endcomment %}
+                              </div>
+                              <script>
+                                const discount_price =  Number({{data.first.discount}});
+                                const selected_discount_price = document.getElementById('selected_discount');
+                                selected_discount_price.innerText = numberWithCommas(discount_price);
+                                console.log(numberWithCommas(discount_price))
+                              </script>
+                            </div>
+                          </div>
+                        
+                        
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 font-medium w-36">Total Price</div>
+                            <div class="md:w-3/4">
+                              <div id="total_price_fin_cont" class="relative w-auto h-full flex items-center">
+                                <span id="total_price_fin" class="capitalize font-medium	 w-10 text-end md:w-14"></span>
+                                {% comment %} <select id='segment' class="w-44 h-8 px-2 rounded-xl capitalize text-xs bg-sky-700 text-white"> {% endcomment %}
+                                  {% comment %} <option disabled selected>Segment</option> {% endcomment %}
+                                  {% comment %} <option value="{{s.id}}">{{s.segment}}</option> {% endcomment %}
+                                {% comment %} </select> {% endcomment %}
+                              </div>
+                              <script>
+                                const total_price = [
+                                  {% for d in data.first.shoot_date.all %}
+                                    {% for e in d.additional_service.all %}
+                                      Number({{ e.additional_service.price|multiply:e.count }}),
+                                    {% endfor %}
+                                  {% endfor %}
+                                ];
+                                const total_price_fin = document.getElementById('total_price_fin');
+                                total_price_fin.innerText = numberWithCommas(Number({{data.first.package.price}} - {{data.first.discount}} )+(total_price.reduce((a, b) => a + b)));
+                              </script>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                      
+                      <div class="my-2 border-b">
+                        <span class="p-1 text-sm font-medium">Payment</span>
+                        <div class="my-2">
+                          {% comment %} <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 w-36">Discount</div>
+                            <div class="md:w-3/4">
+                              <div id="selected_package_price_cont" class="relative w-auto h-full flex items-center">
+                                  <input class="inp_data total_discount rounded-xl h-8 px-2 " data-key="total price" type="number">
+                              </div>
+                            </div>
+                          </div> {% endcomment %}
+                        
+                        
+                          {% comment %} <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 w-36 ">Final Price</div>
+                            <div class="md:w-3/4">
+                              <div id="selected_additionals_price_cont" class="relative w-auto h-full flex items-center">
+                                <span class="inp_data final_price rounded-xl w-3/4 h-full px-2 text-sm font-medium flex items-center" data-key="total price"></span>
+                              </div>
+                            </div>
+                          </div> {% endcomment %}
+                        
+                        
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm my-2">
+                            <div class="md:w-1/4 p-1 w-36">Payment</div>
+                            <div class="md:w-3/4">
+                              <div id="total_price_fin_cont" class="relative w-auto h-full flex items-center">
+                                {% comment %} <span id="total_price_fin" class="capitalize font-medium	w-10 text-end md:w-14"></span>{% endcomment %}
+                                <input class="inp_data payment rounded-xl h-8 px-2 " data-key="total price" type="number">
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm my-2">
+                            <div class="md:w-1/4 p-1 w-36">Payment Mode</div>
+                            <div class="md:w-3/4">
+                              <div id="payment_mode_fin_cont" class="relative w-auto h-full flex items-center">
+                                {% comment %} <span id="total_price_fin" class="capitalize font-medium	w-10 text-end md:w-14"></span>{% endcomment %}
+                                <select class="inp_data payment_mode rounded-xl h-8 px-2" data-key="payment mode">
+                                  <option value=0 disabled selected>Payment Mode</option>
+                                  <option value='cash'>Cash</option>
+                                  <option value='online payment'>Online Payment</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm my-2">
+                            <div class="md:w-1/4 p-1 w-36">Notes</div>
+                            <div class="md:w-3/4">
+                              <div id="payment_note_fin_cont" class="relative w-auto h-full flex items-center">
+                                {% comment %} <span id="total_price_fin" class="capitalize font-medium	w-10 text-end md:w-14"></span>{% endcomment %}
+                                <textarea class="inp_data payment_note resize-none rounded-xl h-20 p-2" data-key="payment note"></textarea>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 w-36">Remaining Payment</div>
+                            <div class="md:w-3/4">
+                              <div id="total_price_fin_cont" class="relative w-auto h-full flex items-center">
+                                {% comment %} <span id="total_price_fin" class="capitalize font-medium	w-10 text-end md:w-14"></span>{% endcomment %}
+                                {% comment %} <input class="inp_data payment rounded-xl h-8 px-2 " data-key="total price" type="number"> {% endcomment %}
+                                <span class="inp_data remaining_payment rounded-xl w-3/4 h-full px-2 text-sm font-bold flex items-center" data-key="total price"></span>
+                              </div>
+                              
+                              <script>
+                                const total_payments= [
+                                  {% for p in payment %}
+                                    {{p.amount}},
+                                  {% endfor %}
+                                  ];
+                                const remaining_payment = document.querySelector('.remaining_payment')
+                                remaining_payment.innerText = numberWithCommas(Number({{data.first.package.price}} - {{data.first.discount}} )+(total_price.reduce((a, b) => a + b)) - total_payments.reduce((a, b) => a + b))
+                              </script>
+
+                            </div>
+                          </div>
+                        </div>
+                            
+
+                            <span class="submit_btn_wrapper flex items-center mb-3">
+                              <span class="w-[150px] py-2 px-3 inline-flex justify-center  items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-teal-500 text-white hover:bg-teal-600 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 capitalize">
+                                <button type="button" class="submit_payment capitalize">submit payment</button>
+                                <span class="submit_payment_loader loading hidden loading-ring loading-sm"></span>
+                              </span>
+           
+                            </span>
+
+
+
+                      </div>
+
+                      <div class="my-2 border-b">
+                        <span class="p-1 text-sm font-medium">Payment History</span>
+                        <div class="my-2">
+                          {% comment %} <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 w-36">Discount</div>
+                            <div class="md:w-3/4">
+                              <div id="selected_package_price_cont" class="relative w-auto h-full flex items-center">
+                                  <input class="inp_data total_discount rounded-xl h-8 px-2 " data-key="total price" type="number">
+                              </div>
+                            </div>
+                          </div> {% endcomment %}
+                        
+                        
+                          {% comment %} <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <div class="md:w-1/4 p-1 w-36 ">Final Price</div>
+                            <div class="md:w-3/4">
+                              <div id="selected_additionals_price_cont" class="relative w-auto h-full flex items-center">
+                                <span class="inp_data final_price rounded-xl w-3/4 h-full px-2 text-sm font-medium flex items-center" data-key="total price"></span>
+                              </div>
+                            </div>
+                          </div> {% endcomment %}
+                        
+                        
+                          <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 overflow-x-scroll mt-3 border">
+                              <thead>
+                                <tr>
+                                      <th scope="col" class="px-6 py-2 text-start text-xs font-medium text-gray-500 capitalize">Date</th>
+                                      <th scope="col" class="px-6 py-2 text-start text-xs font-medium text-gray-500 capitalize">Payment</th>
+                                      <th scope="col" class="px-6 py-2 text-start text-xs font-medium text-gray-500 capitalize">Payment Mode</th>
+                                      <th scope="col" class="px-6 py-2 text-start text-xs font-medium text-gray-500 capitalize">Notes</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+
+                                {% for p in payment %}
+                                  <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-slate-900 dark:even:bg-slate-800">
+                                    <td class="px-6 py-3 whitespace-nowrap text-xs md:text-sm font-medium text-gray-800 dark:text-gray-200">{{p.date}}</td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-xs md:text-sm text-gray-800 dark:text-gray-200">{{p.amount}}</td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-xs md:text-sm text-gray-800 dark:text-gray-200">{{p.payment_mode}}</td>
+                                    <td class="px-6 py-3 whitespace-nowrap text-xs md:text-sm text-gray-800 dark:text-gray-200">{{p.payment_note}}</td>
+                                  </tr>
+                                {% endfor %}
+                                
+                              </tbody>
+                            </table>
+                          </div>
+
+
+                          
+                          {% comment %} <div class="flex justify-start md:min-w-[350px] text-xs md:text-sm"> {% endcomment %}
+                            {% comment %} <div class="md:w-1/4 p-1 w-36">Remaining Payment</div>
+                            <div class="md:w-3/4">
+                              <div id="total_price_fin_cont" class="relative w-auto h-full flex items-center">
+                                <span class="inp_data remaining_payment rounded-xl w-3/4 h-full px-2 text-sm font-bold flex items-center" data-key="total price"></span>
+                              </div>
+                              
+                              <script>
+
+                                const total_payments= [
+                                  {% for p in payment %}
+                                    {{p.amount}},
+                                  {% endfor %}
+                                  ];
+
+                                console.log('total_payments',total_price.reduce((a, b) => a + b))
+
+                                const remaining_payment = document.querySelector('.remaining_payment')
+                                remaining_payment.innerText = numberWithCommas(Number({{data.first.package.price}} - {{data.first.discount}} )+(total_price.reduce((a, b) => a + b)) - total_price.reduce((a, b) => a + b))
+
+                              </script>
+
+                            </div> {% endcomment %}
+                          {% comment %} </div> {% endcomment %}
+                        </div>
+                      </div>
+
+
+
+                    </div>
+
+                    <script>
+                      const submit_payment = document.querySelector('.submit_payment');
+                      submit_payment.addEventListener('click', paymentSubmitFunction);
+  
+                      async function paymentSubmitFunction (e){
+  
+                        submit_payment.classList.add('hidden')
+                        const submit_payment_loader = document.querySelector('.submit_payment_loader');
+                        submit_payment_loader.classList.remove('hidden')
+  
+                        const total_discount = document.querySelector('.total_discount');
+                        const payment = document.querySelector('.payment');
+                        const payment_mode = document.querySelector('.payment_mode');
+                        const payment_note = document.querySelector('.payment_note');
+                        // const package_name = document.querySelector('.package_name');
+  
+  
+                        // if (total_discount.value === ''){ total_discount.value = 0 }
+                        if(payment.value === ''){ payment.value = 0 }
+
+                        if (payment_mode.value === "0"){
+                          poperFunction(400, 'payment mode not selected', false)
+                          submit_payment.classList.remove('hidden')
+                          submit_payment_loader.classList.add('hidden')
+
+                        } else {
+  
+                        let form_data =JSON.stringify({'payment': Number(payment.value), 'payment_mode': payment_mode.value, 'payment_note': payment_note.value })
+  
+                        try{
+  
+                          let token = JSON.parse(localStorage.getItem('token')).access
+                          let a = await ftN('{% url "payment_submit" id=client_data.id %}', 'POST', {'Content-Type': 'application/json', 'Authorization': 'Bearer '+token},form_data)
+                          
+                          if (a.status === 200){
+                            poperFunction(a.status, a.message, true)
+  
+                            submit_payment.classList.remove('hidden')
+                            submit_payment_loader.classList.add('hidden')
+  
+                            // e.target.classList.remove('submit_payment')
+                            // e.target.classList.add('generate_invoice')
+                            // e.target.innerText = 'generate invoice'
+                            
+                            //e.target.removeEventListener('click', paymentSubmitFunction)
+                            // e.target.addEventListener('click', generate_invoice)
+  
+                            console.log(a)
+                          }
+  
+                          else {
+                            poperFunction(a.status, a.message, false)
+                            submit_payment.classList.remove('hidden')
+                            submit_payment_loader.classList.add('hidden')
+  
+                            // e.target.classList.remove('submit_payment')
+                            // e.target.classList.add('generate_invoice')
+                            // e.target.innerText = 'generate invoice'
+                            
+                            //e.target.removeEventListener('click', paymentSubmitFunction)
+                            // e.target.addEventListener('click', generate_invoice)
+                          }
+  
+                        } catch(e){
+                          console.log(e)
+                        }
+                      }
+                      }
+  
+  
+                      async function generate_invoice(e){
+                        let token = JSON.parse(localStorage.getItem('token')).access
+                        let a = await fetch('{% url "generate_invoice" id=client_data.id %}',{"method": 'GET', 'headers': {'Content-Type': 'application/json', 'Authorization': 'Bearer '+token} })
+  
+                        if (a.status === 200){
+                          poperFunction(a.status, 'pdf generated', false)
+                          a = await a.blob()
+                          const bloburl = URL.createObjectURL(a);
+                          const link = document.createElement('a');
+                          link.href = bloburl;
+                          link.download = 'invoice.pdf';
+                          document.body.appendChild(link);
+                          link.click();
+                          link.remove();
+                          URL.revokeObjectURL(bloburl);
+                          
+                          e.target.removeEventListener('click', generate_invoice)
+                          e.target.innerText = 'generated'
+  
+                        } else {
+                          poperFunction(a.status, a.message, false)
+                        }
+                      }
+  
+  
+                    </script>
+
+                    {% else %}
+                      <div class="text-center mt-3">Please select segment to proceed with booking</div>
+                    {% endif %}
+                  </div>
+
+                  {% comment %} <script src="/static/assets/js/poper.js"></script> {% endcomment %}
+
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+
+
+
+              <script>
+                const client_nav = document.querySelectorAll('.client_nav');
+                client_nav.forEach(e=>{
+                  e.addEventListener('click', ()=>{
+                    client_nav.forEach(f=>{
+                      if (f.getAttribute('data-status') ==='active'){
+                        f.classList.value = 'py-4 px-1 inline-flex items-center gap-2 border-b-2 border-transparent text-sm whitespace-nowrap text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600';  
+                        f.setAttribute('data-status','inactive');
+                      };
+                    })
+                    e.classList.value = 'py-4 px-1 inline-flex items-center gap-2 border-b-2 border-blue-500 text-sm font-medium whitespace-nowrap text-blue-600 focus:outline-none focus:text-blue-800';
+                    e.setAttribute('data-status','active');
+                    
+                    let url = window.location.search
+                    url = new URLSearchParams(url);
+                    console.log('url')
+                    url.set('sec', e.name);
+                    console.log(url.toString())
+                    window.location.href = window.location.pathname+'?'+url.toString()
+                  })
+
+                })
+              </script>
+
+    </div>
+  </div>
+</div>
+  
+  
+{% endblock  %}
+  
+  

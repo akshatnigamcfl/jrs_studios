@@ -1,0 +1,87 @@
+{% extends "layout/layout.html" %}
+
+
+{% block main_body %}
+
+<div class="swiper box-border w-screen h-auto max-w-full sticky bg-slate-100 relative pt-4 z-50">
+    <div class="p-1 " style="height: calc(100% - 70px); width: calc(100% - 4px);">
+        <div class="prewedding_cards h-[95%] w-full ">
+            <div class=" swiper_container_2 p-8">
+                <div class="swiper-wrapper">
+
+                    {% for r in data %}
+                        <div class="swiper-slide s1_slide">
+                            <div class="h-[400px] w-[300px] min-w-[300px] mx-2 flex flex-col items-center pt-[10px] hover:shadow-2xl shadow-sm duration-500">
+                                <div class="h-[330px] w-[280px] bg-slate-300 relative">
+                                    {% comment %} <img class="h-full w-full" src="static/assets/images/card_7.webp"> {% endcomment %}
+                                    <div class="h-full w-full bg-[url('/static/{{r.cover_picture}}')] bg-cover bg-center"></div>
+                                    <div class="h-full w-full opacity-20 duration-300 hover:opacity-50 bg-slate-900 absolute top-0 left-0"></div>
+                                </div>
+                                <div class="h-[50px] w-[280px] pt-2 overflow-hidden">
+                                    <div class="h-full w-full p-1 flex flex-col ">
+                                        <div class=""><span class="card_couple tracking-[5px] text-[18px] flex justify-center">{{r.title}}</span></div>
+
+                                    </div>      
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+
+                </div>
+            </div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+
+
+    <script>
+        const swiper_2 = new Swiper('.swiper_container_2', {
+            //direction: 'vertical',
+            loop: true,
+            slidesPerView:4.25,
+        spaceBetween:10,
+        centeredSlides: true,
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+        },
+        // centeredSlides: true,
+    
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+    });
+
+
+    const s1_slide = document.querySelectorAll('.s1_slide');
+    s1_slide.forEach(e=>{
+        e.addEventListener('mouseenter', ()=>{
+            swiper_2.autoplay.stop()
+            console.log('enter')
+        })
+        e.addEventListener('mouseleave', ()=>{
+            console.log('leave')
+            swiper_2.autoplay.start()
+        })
+    })
+
+
+
+
+    {% comment %} const rotating_card = document.querySelectorAll('.rotating_card');
+    rotating_card.forEach(e=>{
+        e.addEventListener('click',()=>{
+            console.log(e)
+        })
+    }) {% endcomment %}
+    </script>
+</div>
+
+
+
+{% endblock  %}
