@@ -9,11 +9,14 @@ def home(request):
     if banner_video.exists():
         int = random.randint(0, len(banner_video) - 1)
         return render(request, 'home_adarsh.html', {'data': banner_video[int]})
+    return render(request, 'home_adarsh.html')
 
 def home2(request):
     banner_video = Banner_video.objects.all().values()
-    int = random.randint(0, len(banner_video) - 1)
-    return render(request, 'home_2.html', {'data': banner_video[int]})
+    if banner_video.exists():
+        int = random.randint(0, len(banner_video) - 1)
+        return render(request, 'home_2.html', {'data': banner_video[int]})
+    return render(request, 'home_2.html')
     
 
 def wedding(request):
