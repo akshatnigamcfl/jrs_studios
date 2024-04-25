@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import dj_database_url
 from pathlib import Path
 import os
 import datetime 
@@ -89,6 +90,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+DATABASES['default'] = dj_database_url.parse('postgres://jrs_user:GW5AOdeCx8u7GojYDN5mTsMNHhFvfdcf@dpg-coga67o21fec73d64hjg-a.oregon-postgres.render.com/jrs')
 
 
 # Password validation
