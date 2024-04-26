@@ -92,7 +92,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.parse('postgres://jrs_user:GW5AOdeCx8u7GojYDN5mTsMNHhFvfdcf@dpg-coga67o21fec73d64hjg-a.oregon-postgres.render.com/jrs')
+# DATABASES['default'] = dj_database_url.parse('postgres://jrs_user:GW5AOdeCx8u7GojYDN5mTsMNHhFvfdcf@dpg-coga67o21fec73d64hjg-a.oregon-postgres.render.com/jrs')
 
 
 # Password validation
