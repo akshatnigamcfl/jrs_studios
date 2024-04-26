@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% comment %} <link href="https://cdn.jsdelivr.net/npm/daisyui@4.5.0/dist/full.min.css" rel="stylesheet" type="text/css" /> {% endcomment %}
-    <link href="/static/assets/css/tw.css" rel="stylesheet" type="text/css" />
-    <script src="/static/assets/js/tw.js"></script>
+    {% load static %}
+    {% comment %} <link href="{{static}}assets/css/tw.css" rel="stylesheet" type="text/css" /> {% endcomment %}
+    
+    <link href="{% static 'assets/css/tw.css' %}" rel="stylesheet" type="text/css" />
+    <script src="{% static 'assets/js/tw.js' %}"></script>
     
     {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
     
